@@ -10,7 +10,6 @@
 #include <sstream>
 #include <string>
 
-
 using namespace std;
 const size_t MAX = 100; // Максимальное число для случайного числа
 const size_t MIN = 1;  // Минимальное число для случайного числа
@@ -43,11 +42,10 @@ void print_array(T* a, size_t N) {
 // Запись  массива в текстовый файл со своим названием или "Text" если пропустить
 // Используется template<typename T> для шаблонности функции
 template<typename T>
-void VText(T* a, size_t N) {
+void VText(vector<T>& a, string SFile) {
     ofstream out;  // поток для записи
-    string SFile = "Text";
 
-    cout << "Введите название файла: ";
+    cout << "Name: ";
     cin >> SFile;
     // Проверяем, если строка пустая
     if (SFile.empty()) {
@@ -56,10 +54,10 @@ void VText(T* a, size_t N) {
 
     out.open(SFile);
     if (!out.is_open()) {
-        throw runtime_error("Ошибка открытия файла"); /// try
+        throw runtime_error("ERROR OPEN FILE");
     }
 
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < a.size(); i++) {
         out << a[i] << " ";
     }
 
@@ -82,13 +80,22 @@ vector<int> ZText(string SFile) {
         }
     }
     else {
-        cerr << "Ошибка открытия файла" << endl;
+        cerr << "ERROR OPEN FILE" << endl;
     }
     in.close();  // закрываем файл
     return tempData;
 }
 
-//Функция возвращающую сумму квадратов из масиива с N переменными нужная для проверки
+// Функция создания случайного массива из количества элементов векторного массива и минимально и макисмально возможными числами
+// Так же используется srand(time(NULL)) в главной программе для инициализации генератора случайных чисел вне цикла 
+template<typename T>
+void random_array(vector<T>& a, size_t MAX, size_t MIN) {
+    for (int i = 0; i < a.size(); i++) {
+        a[i] = rand() % MAX + MIN;  // Случайное значение массива от MIN до MAX
+    }
+}
+
+//Функция возвращающую сумму квадратов из векторного масиива нужная для проверки
 // Используется template<typename T> для шаблонности функции
 template<typename T>
 T sum_array_vector(vector<T>& a) {
@@ -97,6 +104,16 @@ T sum_array_vector(vector<T>& a) {
         sum += a[i] * a[i];
     }
     return sum;
+}
+
+//Функция вывода векторного масиива a 
+// Используется template<typename T> для шаблонности функции
+template<typename T>
+void print_array_vector(vector<T>& a) {
+    for (size_t i = 0; i < a.size(); i++) {
+        cout << a[i] << ", ";
+    }
+    cout << endl;
 }
 
 // Тесты для вектоного и обычного массива
@@ -120,59 +137,4 @@ void TestCheck() {
     assert(sum_array_vector(arrall) == 385);
     assert(sum_array_vector(arrrand) == 170);
     assert(sum_array_vector(arrtest) != 56);
-}
-
-// Функция отвечающая я основное действие
-void CheckFile(string Check) {
-    if (Check == "Y") {// Если файл загружен
-
-        cout << "Введите название файла" << endl;
-        string SFile;
-        cin >> SFile;
-
-        size_t N = ZText(SFile).size();
-        // Теперь мы знаем количество чисел (N) и можем создать массив
-        int* a = new int[N];
-
-        // Копируем данные из временного вектора в массив
-        for (int i = 0; i < N; i++) {
-            a[i] = ZText(SFile)[i];
-        }
-
-        // Вывод считанных данных
-        cout << "Данные из файла: ";
-        print_array(a, N);
-        cout << endl;
-
-        // Функция решения задачи и вывода суммы
-        int sum = sum_array(a, N);
-        cout << "По формуле 'a1^2 + ... + an^2' сумма равна: " << sum << endl;
-
-        delete[] a;  // Освобождение памяти
-    }
-    else // Если создаём новый файл
-    {
-        cout << "До какого числа будет производиться вычисление? ";
-        int N;
-        cin >> N;
-        // Массив
-        int* a = new int[N];
-        // Заполнение массива случайными значениями от min до max
-        random_array(a, N, MAX, MIN);
-        // Функция решения задачи и вывода суммы
-        int sum = sum_array(a, N);
-        // Вывод
-        cout << "Сумма массива ";
-        print_array(a, N);
-        cout << endl << "По формуле 'a1^2 + ... + an^2' ";
-        cout << "Равна: " << sum << endl;
-
-        try {  // Инструкции, которые могут вызвать исключение
-            VText(a, N);
-        }
-        catch (runtime_error& e) {  // Обработка исключения
-            cout << e.what();
-        }
-        delete[] a;  // Освобождение памяти
-    }
 }
