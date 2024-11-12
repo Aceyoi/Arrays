@@ -7,6 +7,7 @@
 #include <vector>
 
 using namespace std;
+using namespace ArraysModul;  // Используем пространство имен ArraysModul
 
 int main() {
     setlocale(LC_ALL, "Russian");
